@@ -84,8 +84,6 @@ module Kirk
       # We gonna have to read from the input stream
       if missing > 0 && !@eof
 
-        # XXX Check if we need to cycle to a tempfile
-
         # Set the new buffer limit to the amount that is going
         # to be read
         @buffer.position(@read).limit(@read + missing)
@@ -102,7 +100,7 @@ module Kirk
         @read += len
 
       # We're at the end
-      elsif @buffer.position == @buffer.limit
+      elsif @position == @read
 
         return
 
@@ -111,16 +109,14 @@ module Kirk
       # Now move the amount read into the string
       @buffer.position(@position).limit(@read)
 
-      chunk_size = append_buffer_to_string(@buffer, string)
-      @position += chunk_size
-      chunk_size
+      append_buffer_to_string(@buffer, string)
     end
 
     def read_chunk_from_tmp_file(size, string)
 
-      if @read < @position - size && !@eof
+      if @read < @position && !@eof
 
-        return unless buffer_to(@position - size)
+        return unless buffer_to(@position)
 
       end
 
@@ -156,14 +152,15 @@ module Kirk
 
       end
 
-      chunk_size = append_buffer_to_string(@buffer, string)
-      @position += chunk_size
-      chunk_size
+      append_buffer_to_string(@buffer, string)
     end
 
     def buffer_to(position)
       until @read == position
-        @buffer.clear.limit(position - @read)
+        limit = position - @read
+        limit = BUFFER_SIZE if limit > BUFFER_SIZE
+
+        @buffer.clear.limit(limit)
 
         len = @io.read(@buffer)
 
@@ -172,8 +169,10 @@ module Kirk
           return
         end
 
+        @buffer.flip
+
         @filebuf.position(@read)
-        @filebuf.write(@buffer.flip)
+        @filebuf.write(@buffer)
 
         @read += len
       end
@@ -186,6 +185,7 @@ module Kirk
       bytes = Java::byte[len].new
       buffer.get(bytes)
       string << String.from_java_bytes(bytes)
+      @position += len
       len
     end
 
