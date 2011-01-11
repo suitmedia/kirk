@@ -127,6 +127,10 @@ module Kirk
         @filebuf.position(@position)
         @filebuf.read(@buffer)
 
+      elsif @eof
+
+        return
+
       end
 
       unless @eof
@@ -137,7 +141,7 @@ module Kirk
         if len == -1
 
           @eof = true
-          return if @buffer.position == 0
+          return if offset == 0
 
         else
 
