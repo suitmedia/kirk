@@ -3,7 +3,6 @@ module Kirk
   require 'kirk/jetty'
   require 'kirk/application'
   require 'kirk/deploy'
-  require 'kirk/input_stream'
   require 'kirk/server'
 
   # JRuby stuff

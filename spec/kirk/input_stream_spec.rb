@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'openssl'
+require "kirk/input_stream"
 
 describe 'Kirk::InputStream' do
 

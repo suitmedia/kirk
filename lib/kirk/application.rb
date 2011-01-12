@@ -3,23 +3,23 @@ module Kirk
 
     import "java.util.concurrent.atomic.AtomicReference"
 
-    def self.new(app, options = {})
+    def self.new(path, options = {})
       inst = super()
-      inst.setup(app, options)
+      inst.setup(path, options)
       inst
     end
 
     attr_reader :path
 
-    def setup(app, options)
-      @app, @options  = app, options
-      @current_deploy = AtomicReference.new load_current_deploy
+    def setup(path, options)
+      @path, @options  = File.expand_path(path), options
+      @current_deploy  = AtomicReference.new load_current_deploy
 
       spawn_deploy_watcher_thread
     end
 
-    def handle(target, request, response, dispatch)
-      current_deploy.handle(target, request, response, dispatch)
+    def handle(target, base_request, request, response)
+      current_deploy.handle(target, base_request, request, response)
     end
 
   private
@@ -29,7 +29,7 @@ module Kirk
     end
 
     def load_current_deploy
-      Deploy.new
+      Deploy.new(self)
     end
 
     def spawn_deploy_watcher_thread

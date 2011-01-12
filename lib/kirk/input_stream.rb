@@ -1,4 +1,4 @@
-require 'stringio'
+require 'java'
 
 module Kirk
   class InputStream
