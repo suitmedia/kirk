@@ -66,8 +66,6 @@ module Kirk
 
         status, headers, output = @app.call(env)
 
-        puts "four"
-
         if (match = %r{^([0-9]{3,3}) +([[:print:]]+)$}.match(status.to_s))
           response.set_status(match[1].to_i, match[2].to_s)
         else

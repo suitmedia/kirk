@@ -1,18 +1,16 @@
 module Kirk
   require 'java'
+  require 'kirk/native'
   require 'kirk/jetty'
-  require 'kirk/application'
-  require 'kirk/deploy'
   require 'kirk/server'
 
-  # JRuby stuff
-  import "org.jruby.embed.LocalContextScope"
-  import "org.jruby.embed.ScriptingContainer"
+  import "com.strobecorp.kirk.Application"
 
   def self.start(path, options = {})
-    application = Application.new(path)
-    server      = Server.new(application)
+    application = Application.new(path.to_s, File.expand_path('../kirk/bootstrap.rb', __FILE__))
 
-    server.run('127.0.0.1')
+    Server.new(application).tap do |server|
+      server.start
+    end
   end
 end
