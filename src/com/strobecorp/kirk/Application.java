@@ -17,8 +17,9 @@ public class Application extends AbstractHandler {
     super();
 
     this.config        = config;
-    this.currentDeploy = new AtomicReference<Deploy>(loadCurrentDeploy());
+    this.currentDeploy = new AtomicReference<Deploy>();
 
+    initialDeployLoad();
     spawnDeployWatcherThread();
   }
 
@@ -29,11 +30,22 @@ public class Application extends AbstractHandler {
   }
 
   private Deploy getCurrentDeploy() {
-    return currentDeploy.get();
+    if ( !config.getReloadEachRequest() ) {
+      return currentDeploy.get();
+    }
+    else {
+      return loadCurrentDeploy();
+    }
   }
 
   private Deploy loadCurrentDeploy() {
     return new Deploy(config.getApplicationPath(), config.getBootstrapPath());
+  }
+
+  private void initialDeployLoad() {
+    if ( !config.getReloadEachRequest() ) {
+      this.currentDeploy.set(loadCurrentDeploy());
+    }
   }
 
   private void spawnDeployWatcherThread() {
