@@ -10,16 +10,14 @@ import org.eclipse.jetty.server.Request;
 
 public class Application extends AbstractHandler {
 
-  private String applicationPath;
-  private String bootstrapPath;
   private AtomicReference<Deploy> currentDeploy;
+  private ApplicationConfig       config;
 
-  public Application(String applicationPath, String bootstrapPath) {
+  public Application(ApplicationConfig config) {
     super();
 
-    this.applicationPath = applicationPath;
-    this.bootstrapPath   = bootstrapPath;
-    this.currentDeploy   = new AtomicReference<Deploy>(loadCurrentDeploy());
+    this.config        = config;
+    this.currentDeploy = new AtomicReference<Deploy>(loadCurrentDeploy());
 
     spawnDeployWatcherThread();
   }
@@ -35,7 +33,7 @@ public class Application extends AbstractHandler {
   }
 
   private Deploy loadCurrentDeploy() {
-    return new Deploy(applicationPath, bootstrapPath);
+    return new Deploy(config.getApplicationPath(), config.getBootstrapPath());
   }
 
   private void spawnDeployWatcherThread() {
