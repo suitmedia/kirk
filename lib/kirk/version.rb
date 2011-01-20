@@ -1,0 +1,4 @@
+module Kirk
+  NAME    = "kirk".freeze
+  VERSION = "0.0.1".freeze
+end

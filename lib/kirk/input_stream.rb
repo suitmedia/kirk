@@ -55,6 +55,11 @@ module Kirk
       seek(0)
     end
 
+    def close
+      BUFFER_POOL.put(@buffer)
+      nil
+    end
+
   private
 
     def channelize(stream)

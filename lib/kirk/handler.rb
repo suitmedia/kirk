@@ -1,17 +1,49 @@
-require 'rack'
-require 'kirk/input_stream'
-
 module Kirk
   class Handler
-    DefaultRackEnv = {
-      'rack.version'      => ::Rack::VERSION,
-      'rack.multithread'  => true,
-      'rack.multiprocess' => false,
-      'rack.run_once'     => false,
-      'rack.errors'       => STDERR,
-      'jruby.version'     => JRUBY_VERSION,
-      'SCRIPT_NAME'       => ''
+    # Required environment variable keys
+    REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+    SCRIPT_NAME    = 'SCRIPT_NAME'.freeze
+    PATH_INFO      = 'PATH_INFO'.freeze
+    QUERY_STRING   = 'QUERY_STRING'.freeze
+    SERVER_NAME    = 'SERVER_NAME'.freeze
+    SERVER_PORT    = 'SERVER_PORT'.freeze
+    CONTENT_TYPE   = 'CONTENT_TYPE'.freeze
+    CONTENT_LENGTH = 'CONTENT_LENGTH'.freeze
+    REQUEST_URI    = 'REQUEST_URI'.freeze
+    REMOTE_HOST    = 'REMOTE_HOST'.freeze
+    REMOTE_ADDR    = 'REMOTE_ADDR'.freeze
+    REMOTE_USER    = 'REMOTE_USER'.freeze
+
+    # Rack specific variable keys
+    RACK_VERSION      = 'rack.version'.freeze
+    RACK_URL_SCHEME   = 'rack.url_scheme'.freeze
+    RACK_INPUT        = 'rack.input'.freeze
+    RACK_ERRORS       = 'rack.errors'.freeze
+    RACK_MULTITHREAD  = 'rack.multithread'.freeze
+    RACK_MULTIPROCESS = 'rack.multiprocess'.freeze
+    RACK_RUN_ONCE     = 'rack.run_once'.freeze
+    HTTP_PREFIX       = 'HTTP_'.freeze
+
+    # Rack response header names
+    CONTENT_TYPE_RESP   = 'Content-Type'
+    CONTENT_LENGTH_RESP = 'Content-Length'
+
+    # Kirk information
+    SERVER          = "#{NAME} #{VERSION}".freeze
+    SERVER_SOFTWARE = 'SERVER_SOFTWARE'.freeze
+
+    DEFAULT_RACK_ENV = {
+      SERVER_SOFTWARE => SERVER,
+
+      # Rack stuff
+      RACK_VERSION      => Rack::VERSION,
+      RACK_ERRORS       => STDERR,
+      RACK_MULTITHREAD  => true,
+      RACK_MULTIPROCESS => false,
+      RACK_RUN_ONCE     => false,
     }
+
+    CONTENT_LENGTH_TYPE_REGEXP = /^Content-(?:Type|Length)$/i
 
     def initialize
       @app, @opts = Rack::Builder.parse_file('config.ru')
@@ -19,27 +51,37 @@ module Kirk
 
     def handle(target, base_request, request, response)
       begin
-        env = DefaultRackEnv.merge({
-          'rack.url_scheme' => request.get_scheme,
-          'CONTENT_TYPE'    => request.get_content_type,
-          'CONTENT_LENGTH'  => request.get_content_length, # some post-processing done below
-          'REQUEST_METHOD'  => request.get_method       || "GET",
-          'REQUEST_URI'     => request.getRequestURI,
-          'PATH_INFO'       => request.get_path_info,
-          'QUERY_STRING'    => request.get_query_string || "",
-          'SERVER_NAME'     => request.get_server_name  || "",
-          'REMOTE_HOST'     => request.get_remote_host  || "",
-          'REMOTE_ADDR'     => request.get_remote_addr  || "",
-          'REMOTE_USER'     => request.get_remote_user  || "",
-          'SERVER_PORT'     => request.get_server_port.to_s
-        })
+        env = DEFAULT_RACK_ENV.merge(
+          REQUEST_METHOD => request.get_method || "GET",
+          REQUEST_URI    => request.getRequestURI,
+          PATH_INFO      => request.get_path_info,
+          QUERY_STRING   => request.get_query_string || "",
+          SERVER_NAME    => request.get_server_name  || "",
+          REMOTE_HOST    => request.get_remote_host  || "",
+          REMOTE_ADDR    => request.get_remote_addr  || "",
+          REMOTE_USER    => request.get_remote_addr  || "",
+          SERVER_PORT    => request.get_server_port.to_s)
 
-        env['CONTENT_LENGTH'] = env['CONTENT_LENGTH'] >= 0? env['CONTENT_LENGTH'].to_s : "0"
+        # Process the content length
+        if (content_length = request.get_content_length) >= 0
+          env[CONTENT_LENGTH] = content_length.to_s
+        else
+          env[CONTENT_LENGTH] = "0"
+        end
 
-        request.get_header_names.each do |h|
-          next if h =~ /^Content-(Type|Length)$/i
-          k = "HTTP_#{h.upcase.gsub(/-/, '_')}"
-          env[k] = request.getHeader(h) unless env.has_key?(k)
+        if (content_type = request.get_content_type)
+          env[CONTENT_TYPE] = content_type unless content_type == ''
+        end
+
+        request.get_header_names.each do |header|
+          next if header =~ CONTENT_LENGTH_TYPE_REGEXP
+
+          value = request.get_header(header)
+
+          header.tr! '-', '_'
+          header.upcase!
+
+          env[header] = value unless env.key?(header)
         end
 
         # input = request.get_input_stream
@@ -51,43 +93,32 @@ module Kirk
         # input = Input.new(input)
         #
         # env['rack.input'] = input
-        env['rack.input'] = InputStream.new(request.get_input_stream)
+        env[RACK_INPUT] = InputStream.new(request.get_input_stream)
 
-        # request.get_content_type returns nil if the Content-Type is not included
-        # and Rack doesn't expect Content-Type => '' - certain methods will issue 
-        # a backtrace if it's passed in. 
-        #
-        # The correct behaviour is not to include Content-Type in the env hash
-        # if it is blank. 
-        #
-        # https://github.com/rack/rack/issues#issue/40 covers the problem from
-        # Rack's end. 
-        env.delete('CONTENT_TYPE') if [nil, ''].include?(env['CONTENT_TYPE'])
+        # Dispatch the request
+        status, headers, body = @app.call(env)
 
-        status, headers, output = @app.call(env)
+        response.set_status(status.to_i)
 
-        if (match = %r{^([0-9]{3,3}) +([[:print:]]+)$}.match(status.to_s))
-          response.set_status(match[1].to_i, match[2].to_s)
-        else
-          response.set_status(status.to_i)
-        end
-
-        headers.each do |k, v|
-          case k
-          when 'Content-Type'
-            response.set_content_type(v)
-          when 'Content-Length'
-            response.set_content_length(v.to_i)
+        headers.each do |header, value|
+          case header
+          when CONTENT_TYPE_RESP
+            response.set_content_type(value)
+          when CONTENT_LENGTH_RESP
+            response.set_content_length(value.to_i)
           else
-            response.set_header(k, v)
+            response.set_header(header, value)
           end
         end
 
         buffer = response.get_output_stream
-        output.each do |s|
+        body.each do |s|
           buffer.write(s.to_java_bytes)
         end
+
+        body.close if body.respond_to?(:close)
       ensure
+        env[RACK_INPUT].close if env[RACK_INPUT]
         request.set_handled(true)
       end
     end
