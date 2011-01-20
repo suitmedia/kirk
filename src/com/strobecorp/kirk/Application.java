@@ -19,8 +19,7 @@ public class Application extends AbstractHandler {
     this.config        = config;
     this.currentDeploy = new AtomicReference<Deploy>();
 
-    initialDeployLoad();
-    spawnDeployWatcherThread();
+    reloadDeploy();
   }
 
   public void handle(String target, Request baseRequest,
@@ -29,26 +28,19 @@ public class Application extends AbstractHandler {
     getCurrentDeploy().handle(target, baseRequest, request, response);
   }
 
+  public ApplicationConfig getConfig() {
+    return config;
+  }
+
+  public void reloadDeploy() {
+    this.currentDeploy.set(loadCurrentDeploy());
+  }
+
   private Deploy getCurrentDeploy() {
-    if ( !config.getReloadEachRequest() ) {
-      return currentDeploy.get();
-    }
-    else {
-      return loadCurrentDeploy();
-    }
+    return currentDeploy.get();
   }
 
   private Deploy loadCurrentDeploy() {
     return new Deploy(config.getApplicationPath(), config.getBootstrapPath());
-  }
-
-  private void initialDeployLoad() {
-    if ( !config.getReloadEachRequest() ) {
-      this.currentDeploy.set(loadCurrentDeploy());
-    }
-  }
-
-  private void spawnDeployWatcherThread() {
-    // Nothing yet
   }
 }

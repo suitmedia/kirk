@@ -2,13 +2,8 @@ package com.strobecorp.kirk;
 
 public class ApplicationConfig {
 
-  private String  applicationPath;
-  private String  bootstrapPath;
-  private Boolean reloadEachRequest;
-
-  public ApplicationConfig() {
-    this.reloadEachRequest = false;
-  }
+  private String applicationPath;
+  private String bootstrapPath;
 
   public String getApplicationPath() {
     return applicationPath;
@@ -25,13 +20,4 @@ public class ApplicationConfig {
   public void setBootstrapPath(String bootstrapPath) {
     this.bootstrapPath = bootstrapPath;
   }
-
-  public Boolean getReloadEachRequest() {
-    return reloadEachRequest;
-  }
-
-  public void setReloadEachRequest(Boolean reloadEachRequest) {
-    this.reloadEachRequest = reloadEachRequest;
-  }
-
 }
