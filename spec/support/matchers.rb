@@ -23,4 +23,17 @@ module SpecHelpers
       "Expected Rack env:\n#{expected.inspect}\n  Got instead:\n#{env.inspect}"
     end
   end
+
+  {
+
+    'request_method' => 'REQUEST_METHOD'
+
+  }.each do |k, v|
+    RSpec::Matchers.define :"have_#{k}" do |val|
+      match do |response|
+        env = Marshal.load(response.body)
+        env[v] == val
+      end
+    end
+  end
 end

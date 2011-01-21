@@ -1,10 +1,13 @@
 require 'spec_helper'
 
 describe "Kirk's Rack handler" do
-  it "passes the correct rack env to the rack app" do
+  before :each do
     start echo_app_path
+  end
 
+  it "passes the correct rack env to the rack app" do
     get '/'
+
     last_response.should have_env(
       # Default env
       'SERVER_SOFTWARE'   => 'kirk 0.0.1',
@@ -33,5 +36,11 @@ describe "Kirk's Rack handler" do
 
       'rack.input'        => nil
     )
+  end
+
+  it "passes the correct REQUEST_METHOD" do
+    post '/'
+
+    last_response.should have_request_method('POST')
   end
 end
