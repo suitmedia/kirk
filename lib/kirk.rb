@@ -8,6 +8,8 @@ module Kirk
   import "com.strobecorp.kirk.ApplicationConfig"
 
   require 'kirk/application'
+  require 'kirk/application_config'
+  require 'kirk/builder'
   require 'kirk/server'
 
   def self.start(path, opts = {})

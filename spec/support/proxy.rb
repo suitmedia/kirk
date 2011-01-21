@@ -22,7 +22,7 @@ module SpecHelpers
       end
     end
 
-    def initialize(host = '127.0.0.1', port = 8080)
+    def initialize(host = '127.0.0.1', port = 9090)
       @host, @port = host, port
     end
 

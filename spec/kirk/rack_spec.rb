@@ -26,13 +26,13 @@ describe "Kirk's Rack handler" do
       'REMOTE_HOST'       => '127.0.0.1',
       'REMOTE_ADDR'       => '127.0.0.1',
       'REMOTE_USER'       => '',
-      'SERVER_PORT'       => '8080',
+      'SERVER_PORT'       => '9090',
 
       'CONTENT_LENGTH'    => "0",
       'HTTP_ACCEPT'       => "*/*",
 
       'HTTP_CONNECTION'   => 'close',
-      'HTTP_HOST'         => '127.0.0.1:8080',
+      'HTTP_HOST'         => '127.0.0.1:9090',
 
       'rack.input'        => nil
     )
