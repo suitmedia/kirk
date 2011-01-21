@@ -27,6 +27,10 @@ module SpecHelpers
     application_path('randomized', *args)
   end
 
+  def echo_app_path(*args)
+    application_path('echo_app', *args)
+  end
+
   def tmp(*args)
     root.join('tmp', *args)
   end

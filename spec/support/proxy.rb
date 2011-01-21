@@ -57,9 +57,13 @@ module SpecHelpers
       http.read_timeout = 60
       http.open_timeout = 60
 
+      req_hdrs = env_to_http_headers(env)
+      # Will magically set the content type :(
+      req_hdrs['Content-Type'] = "" unless req_hdrs.key?('Content-Type')
+
       request = Net::HTTPGenericRequest.new(
         env['REQUEST_METHOD'], !!body, true, path,
-        env_to_http_headers(env))
+        req_hdrs)
 
       request.body_stream = body if body
 

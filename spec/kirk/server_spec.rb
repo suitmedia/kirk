@@ -1,13 +1,8 @@
 require 'spec_helper'
-require 'net/http'
 
 describe 'Kirk::Server' do
-  after :each do
-    @server.stop
-  end
-
   it "runs the server" do
-    @server = Kirk.start hello_world_path
+    start hello_world_path
 
     get '/'
     last_response.should be_successful
@@ -15,7 +10,7 @@ describe 'Kirk::Server' do
   end
 
   it "reloads the server" do
-    @server = Kirk.start randomized_app_path
+    start randomized_app_path
 
     get '/'
     num = last_response.body

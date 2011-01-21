@@ -52,14 +52,14 @@ module Kirk
     def handle(target, base_request, request, response)
       begin
         env = DEFAULT_RACK_ENV.merge(
-          REQUEST_METHOD => request.get_method || "GET",
           REQUEST_URI    => request.getRequestURI,
           PATH_INFO      => request.get_path_info,
+          REQUEST_METHOD => request.get_method       || "GET",
           QUERY_STRING   => request.get_query_string || "",
           SERVER_NAME    => request.get_server_name  || "",
           REMOTE_HOST    => request.get_remote_host  || "",
           REMOTE_ADDR    => request.get_remote_addr  || "",
-          REMOTE_USER    => request.get_remote_addr  || "",
+          REMOTE_USER    => request.get_remote_user  || "",
           SERVER_PORT    => request.get_server_port.to_s)
 
         # Process the content length
@@ -75,13 +75,13 @@ module Kirk
 
         request.get_header_names.each do |header|
           next if header =~ CONTENT_LENGTH_TYPE_REGEXP
-
           value = request.get_header(header)
 
           header.tr! '-', '_'
           header.upcase!
 
-          env[header] = value unless env.key?(header)
+          header      = "#{HTTP_PREFIX}#{header}"
+          env[header] = value unless env.key?(header) || value == ''
         end
 
         # input = request.get_input_stream
