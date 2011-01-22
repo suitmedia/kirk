@@ -1,12 +1,15 @@
 module SpecHelpers
-  def start(path)
+  def start(path = nil, &blk)
     @server.stop if @server
-    @server = Kirk::Server.build do
+
+    blk ||= lambda do
       rack path do
         listen  "0.0.0.0:9090"
-        watch   'REVISION'
+        watch   "REVISION"
       end
     end
+
+    @server = Kirk::Server.build(&blk)
     @server.start
   end
 end

@@ -31,6 +31,10 @@ module SpecHelpers
     application_path('echo_app', *args)
   end
 
+  def require_as_app_path(*args)
+    application_path('require_as', *args)
+  end
+
   def tmp(*args)
     root.join('tmp', *args)
   end

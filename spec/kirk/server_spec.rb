@@ -9,6 +9,30 @@ describe 'Kirk::Server' do
     last_response.should have_body('Hello World')
   end
 
+  it "runs the server on the specified port" do
+    path = hello_world_path
+
+    start do
+      rack "#{path}" do
+        listen 9091
+      end
+    end
+
+    host! 'localhost', 9091
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body('Hello World')
+  end
+
+  it "doesn't require 'bundler/setup' if there is no Gemfile" do
+    start require_as_app_path
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body('ActiveSupport')
+  end
+
   it "reloads the server" do
     start randomized_app_path
 

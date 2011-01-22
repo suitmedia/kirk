@@ -21,6 +21,7 @@ module Kirk
     def listen(listen)
       listen = listen.to_s
       listen = ":#{listen}" unless listen.index(':')
+      listen = "0.0.0.0#{listen}" if listen.index(':') == 0
 
       @current.listen = listen
     end

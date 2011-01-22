@@ -112,4 +112,8 @@ module SpecHelpers
   def app
     @app ||= Proxy.new
   end
+
+  def host!(host, port = 9090)
+    @app = Proxy.new(host, port)
+  end
 end
