@@ -25,6 +25,30 @@ describe 'Kirk::Server' do
     last_response.should have_body('Hello World')
   end
 
+  it "can start multiple applications" do
+    path1 = hello_world_path
+    path2 = goodbye_world_path
+
+    start do
+      rack "#{path1}" do
+        listen '127.0.0.1:9090'
+      end
+
+      rack "#{path2}" do
+        listen ':9090'
+      end
+    end
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body('Hello World')
+
+    host! IP_ADDRESS, 9090
+
+    get '/'
+    last_response.should have_body('Goodbye World')
+  end
+
   it "doesn't require 'bundler/setup' if there is no Gemfile" do
     start require_as_app_path
 

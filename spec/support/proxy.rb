@@ -22,12 +22,12 @@ module SpecHelpers
       end
     end
 
-    def initialize(host = '127.0.0.1', port = 9090)
-      @host, @port = host, port
+    def initialize(ctx)
+      @ctx = ctx
     end
 
     def call(env)
-      queue = run_request(env, @host, @port, env['PATH_INFO'])
+      queue = run_request(env, @ctx.host, @ctx.port, env['PATH_INFO'])
 
       msg = queue.pop
 
@@ -110,10 +110,18 @@ module SpecHelpers
   end
 
   def app
-    @app ||= Proxy.new
+    @app ||= Proxy.new(self)
+  end
+
+  def host
+    @host || '127.0.0.1'
+  end
+
+  def port
+    @port || 9090
   end
 
   def host!(host, port = 9090)
-    @app = Proxy.new(host, port)
+    @host, @port = host, port
   end
 end

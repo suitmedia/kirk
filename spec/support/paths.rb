@@ -23,6 +23,10 @@ module SpecHelpers
     application_path('hello_world', *args)
   end
 
+  def goodbye_world_path(*args)
+    application_path('goodbye_world', *args)
+  end
+
   def randomized_app_path(*args)
     application_path('randomized', *args)
   end
