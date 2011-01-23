@@ -1,7 +1,11 @@
 module SpecHelpers
-  RSpec::Matchers.define :be_successful do
-    match do |response|
-      response.status == 200
+  { 'be_successful' => 200,
+    'be_missing'    => 404
+  }.each do |method, status|
+    RSpec::Matchers.define method do
+      match do |response|
+        response.status == status
+      end
     end
   end
 

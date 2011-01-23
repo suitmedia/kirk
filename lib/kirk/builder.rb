@@ -33,6 +33,11 @@ module Kirk
     def to_handler
       handlers = @configs.map do |c|
         Jetty::ContextHandler.new.tap do |ctx|
+          # Set the virtual hosts
+          unless c.hosts.empty?
+            ctx.set_virtual_hosts(c.hosts)
+          end
+
           ctx.set_connector_names [c.listen]
           ctx.set_handler Application.new(c)
         end
@@ -44,20 +49,28 @@ module Kirk
     end
 
     def to_connectors
-      @configs.map do |c|
-        Jetty::SelectChannelConnector.new.tap do |conn|
-          host, port = c.listen.split(':')
+      @connectors = {}
 
-          conn.set_host(host) unless host.empty?
-          conn.set_port(port.to_i)
-        end
+      @configs.each do |config|
+        next if @connectors.key?(config.listen)
+
+        host, port = config.listen.split(':')
+
+        connector = Jetty::SelectChannelConnector.new
+        connector.set_host(host)
+        connector.set_port(port.to_i)
+
+        @connectors[config.listen] = connector
       end
+
+      @connectors.values
     end
 
   private
 
     def new_config
       ApplicationConfig.new.tap do |config|
+        config.listen = '0.0.0.0:9090'
         config.set_bootstrap_path File.expand_path('../bootstrap.rb', __FILE__)
         config.set_life_cycle_listener Application::WatcherThread.new
       end

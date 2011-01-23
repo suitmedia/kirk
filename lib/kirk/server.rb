@@ -18,6 +18,9 @@ module Kirk
         end
       end
 
+      # XXX Handle logging
+      Jetty::Log.set_log(nil)
+
       @server.start
     end
 

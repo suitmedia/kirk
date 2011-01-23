@@ -95,7 +95,6 @@ module SpecHelpers
       {}.tap do |hdrs|
         env.each do |name, val|
           next unless name.is_a?(String)
-          next if     name == 'HTTP_HOST'
           next unless name =~ /^HTTP_/ || KEEP.include?(name)
 
           hdrs[ headerize(name) ] = val

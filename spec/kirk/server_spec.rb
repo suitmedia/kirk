@@ -49,6 +49,52 @@ describe 'Kirk::Server' do
     last_response.should have_body('Goodbye World')
   end
 
+  it "can start multiple applications on the same port" do
+    path1 = hello_world_path
+    path2 = goodbye_world_path
+
+    start do
+      rack "#{path1}" do
+        listen '127.0.0.1:9090'
+      end
+
+      rack "#{path2}" do
+        listen '127.0.0.1:9090'
+      end
+    end
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body('Hello World')
+  end
+
+  it "can partition applications by the host name" do
+    path1 = hello_world_path
+    path2 = goodbye_world_path
+
+    start do
+      rack "#{path1}" do
+        hosts 'foo.com', 'bar.com'
+      end
+
+      rack "#{path2}" do
+        hosts 'baz.com'
+      end
+    end
+
+    get '/', {}, 'HTTP_HOST' => 'foo.com'
+    last_response.should have_body('Hello World')
+
+    get '/', {}, 'HTTP_HOST' => 'bar.com'
+    last_response.should have_body('Hello World')
+
+    get '/', {}, 'HTTP_HOST' => 'baz.com'
+    last_response.should have_body('Goodbye World')
+
+    get '/', {}, 'HTTP_HOST' => 'localhost'
+    last_response.should be_missing
+  end
+
   it "doesn't require 'bundler/setup' if there is no Gemfile" do
     start require_as_app_path
 

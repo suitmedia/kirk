@@ -10,5 +10,6 @@ module Kirk
     import "org.eclipse.jetty.server.handler.ContextHandlerCollection"
     import "org.eclipse.jetty.server.Server"
     import "org.eclipse.jetty.util.component.LifeCycle"
+    import "org.eclipse.jetty.util.log.Log"
   end
 end

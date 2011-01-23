@@ -22,17 +22,16 @@ describe "Kirk's Rack handler" do
       'PATH_INFO'         => '/',
       'REQUEST_METHOD'    => 'GET',
       'QUERY_STRING'      => '',
-      'SERVER_NAME'       => '127.0.0.1',
+      'SERVER_NAME'       => 'example.org',
       'REMOTE_HOST'       => '127.0.0.1',
       'REMOTE_ADDR'       => '127.0.0.1',
       'REMOTE_USER'       => '',
-      'SERVER_PORT'       => '9090',
+      'SERVER_PORT'       => '80',
 
       'CONTENT_LENGTH'    => "0",
+      'HTTP_HOST'         => "example.org",
       'HTTP_ACCEPT'       => "*/*",
-
       'HTTP_CONNECTION'   => 'close',
-      'HTTP_HOST'         => '127.0.0.1:9090',
 
       'rack.input'        => nil
     )
