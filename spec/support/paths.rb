@@ -39,6 +39,10 @@ module SpecHelpers
     application_path('require_as', *args)
   end
 
+  def bundled_app_path(*args)
+    application_path('bundled_app', *args)
+  end
+
   def tmp(*args)
     root.join('tmp', *args)
   end

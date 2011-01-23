@@ -40,6 +40,12 @@ describe "Kirk's Rack handler" do
   it "passes the correct REQUEST_METHOD" do
     post '/'
 
-    last_response.should have_request_method('POST')
+    last_response.should receive_request_method('POST')
+  end
+
+  it "provides the request body" do
+    post '/', {}, :input => "ZOMG"
+
+    last_response.should receive_body('ZOMG')
   end
 end

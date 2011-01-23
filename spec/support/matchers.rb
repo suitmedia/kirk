@@ -29,11 +29,10 @@ module SpecHelpers
   end
 
   {
-
-    'request_method' => 'REQUEST_METHOD'
-
+    'request_method' => 'REQUEST_METHOD',
+    'body'           => 'rack.input'
   }.each do |k, v|
-    RSpec::Matchers.define :"have_#{k}" do |val|
+    RSpec::Matchers.define :"receive_#{k}" do |val|
       match do |response|
         env = Marshal.load(response.body)
         env[v] == val

@@ -103,6 +103,15 @@ describe 'Kirk::Server' do
     last_response.should have_body('ActiveSupport')
   end
 
+  it "requires 'bundler/setup' if there is a Gemfile" do
+    start bundled_app_path
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body("required ActiveSupport\n" \
+                                   "failed to load Rake\n")
+  end
+
   it "reloads the server" do
     start randomized_app_path
 
