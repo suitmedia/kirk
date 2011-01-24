@@ -30,3 +30,12 @@ Here is a brief highlight of some of the features available.
 ### Getting Started
 
 (WIP)
+
+### Caveats
+
+This is still a pretty new project and a lot of settings that should be
+abstracted are still hardcoded in the source.
+
+### Getting Help
+
+Ping me (carllerche) on Freenode in #carlhuda
