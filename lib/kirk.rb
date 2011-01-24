@@ -15,8 +15,11 @@ module Kirk
     import "com.strobecorp.kirk.LogFormatter"
   end
 
-  require 'kirk/application'
-  require 'kirk/application_config'
+  module Applications
+    require 'kirk/applications/config'
+    require 'kirk/applications/hot_deployable'
+  end
+
   require 'kirk/builder'
   require 'kirk/server'
 

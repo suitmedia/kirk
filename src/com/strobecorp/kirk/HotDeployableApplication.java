@@ -18,12 +18,6 @@ public class HotDeployableApplication extends AbstractHandler {
 
     this.config        = config;
     this.currentDeploy = new AtomicReference<Deploy>();
-
-    if ( this.config.getLifeCycleListener() != null ) {
-      addLifeCycleListener( this.config.getLifeCycleListener() );
-    }
-
-    reloadDeploy();
   }
 
   public void handle(String target, Request baseRequest,
@@ -36,7 +30,7 @@ public class HotDeployableApplication extends AbstractHandler {
     return config;
   }
 
-  public void reloadDeploy() {
+  public void redeploy() {
     this.currentDeploy.set(loadCurrentDeploy());
   }
 

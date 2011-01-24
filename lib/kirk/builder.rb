@@ -53,7 +53,7 @@ module Kirk
           end
 
           ctx.set_connector_names [c.listen]
-          ctx.set_handler Application.new(c)
+          ctx.set_handler Applications::HotDeployable.new(c)
         end
       end
 
@@ -83,10 +83,9 @@ module Kirk
   private
 
     def new_config
-      ApplicationConfig.new.tap do |config|
-        config.listen             = '0.0.0.0:9090'
-        config.bootstrap_path     = File.expand_path('../bootstrap.rb', __FILE__)
-        config.lifecycle_listener = Application::WatcherThread.new
+      Applications::Config.new.tap do |config|
+        config.listen         = '0.0.0.0:9090'
+        config.bootstrap_path = File.expand_path('../bootstrap.rb', __FILE__)
       end
     end
   end
