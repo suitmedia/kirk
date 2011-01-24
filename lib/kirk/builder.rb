@@ -1,8 +1,20 @@
 module Kirk
   class Builder
+
+    VALID_LOG_LEVELS = %w(severe warning info config fine finer finest all)
+
+    attr_reader :options
+
     def initialize
       @current = nil
       @configs = []
+      @options = {}
+    end
+
+    def log(opts = {})
+      level = opts[:level]
+      raise "Invalid log level" unless VALID_LOG_LEVELS.include?(level.to_s)
+      @options[:log_level] = level.to_s
     end
 
     def rack(path)

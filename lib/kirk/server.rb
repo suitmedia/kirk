@@ -1,15 +1,16 @@
 module Kirk
   class Server
-    def self.build(str = nil, &blk)
+    def self.build(file = nil, &blk)
       builder = Builder.new
 
-      str ? builder.instance_eval(str) : builder.instance_eval(&blk)
+      file ? builder.instance_eval(File.read(file), file) :
+             builder.instance_eval(&blk)
 
-      new(builder.to_handler, builder.to_connectors)
+      new(builder.to_handler, builder.to_connectors, builder.options)
     end
 
-    def initialize(handler, connectors)
-      @handler, @connectors = handler, connectors
+    def initialize(handler, connectors, options)
+      @handler, @connectors, @options = handler, connectors, options
     end
 
     def start
@@ -20,8 +21,7 @@ module Kirk
         end
       end
 
-      # XXX Handle logging
-      Jetty::Log.set_log(nil)
+      configure!
 
       @server.start
     end
@@ -32,6 +32,27 @@ module Kirk
 
     def stop
       @server.stop
+    end
+
+  private
+
+    def configure!
+      Kirk.logger.set_level log_level
+    end
+
+    %w(severe warning info config fine finer finest all)
+
+    def log_level
+      case @options[:log_level] || "info"
+      when "severe"   then Level::SEVERE
+      when "warning"  then Level::WARNING
+      when "info"     then Level::INFO
+      when "config"   then Level::CONFIG
+      when "fine"     then Level::FINE
+      when "finer"    then Level::FINER
+      when "finest"   then Level::FINEST
+      when "all"      then Level::ALL
+      end
     end
   end
 end

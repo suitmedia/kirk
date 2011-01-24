@@ -42,6 +42,7 @@ module Kirk
             last_modified = app.last_modified
 
             if last_modified > @last_modified
+              Kirk.logger.info("Reloading `#{app.application_path}`")
               app.reload_deploy
               @last_modified = last_modified
             end

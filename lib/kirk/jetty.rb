@@ -11,5 +11,8 @@ module Kirk
     import "org.eclipse.jetty.server.Server"
     import "org.eclipse.jetty.util.component.LifeCycle"
     import "org.eclipse.jetty.util.log.Log"
+    import "org.eclipse.jetty.util.log.JavaUtilLog"
+
+    Log.set_log Jetty::JavaUtilLog.new
   end
 end

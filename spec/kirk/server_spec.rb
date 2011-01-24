@@ -13,6 +13,8 @@ describe 'Kirk::Server' do
     path = hello_world_path
 
     start do
+      log :level => :warning
+
       rack "#{path}" do
         listen 9091
       end
@@ -30,6 +32,8 @@ describe 'Kirk::Server' do
     path2 = goodbye_world_path
 
     start do
+      log :level => :warning
+
       rack "#{path1}" do
         listen '127.0.0.1:9090'
       end
@@ -54,6 +58,8 @@ describe 'Kirk::Server' do
     path2 = goodbye_world_path
 
     start do
+      log :level => :warning
+
       rack "#{path1}" do
         listen '127.0.0.1:9090'
       end
@@ -73,6 +79,8 @@ describe 'Kirk::Server' do
     path2 = goodbye_world_path
 
     start do
+      log :level => :warning
+
       rack "#{path1}" do
         hosts 'foo.com', 'bar.com'
       end
