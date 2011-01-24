@@ -2,6 +2,7 @@ $:.unshift File.expand_path('../../build', __FILE__)
 require 'kirk'
 require 'fileutils'
 require 'socket'
+require 'zlib'
 require 'rack/test'
 require 'net/http'
 

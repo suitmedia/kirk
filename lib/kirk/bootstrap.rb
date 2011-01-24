@@ -1,4 +1,8 @@
+require 'java'
+
 module Kirk
+  import 'java.util.zip.InflaterInputStream'
+
   class Bootstrap
     def run(application_path)
       Dir.chdir File.expand_path(application_path)

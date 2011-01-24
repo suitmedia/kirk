@@ -84,16 +84,13 @@ module Kirk
           env[header] = value unless env.key?(header) || value == ''
         end
 
-        # input = request.get_input_stream
-        #
-        # if env['HTTP_CONTENT_ENCODING'] == 'deflate'
-        #   input = InflaterInputStream.new(input)
-        # end
-        #
-        # input = Input.new(input)
-        #
-        # env['rack.input'] = input
-        env[RACK_INPUT] = InputStream.new(request.get_input_stream)
+        input = request.get_input_stream
+
+        if env['HTTP_CONTENT_ENCODING'] == 'deflate'
+          input = InflaterInputStream.new(input)
+        end
+
+        env[RACK_INPUT] = InputStream.new(input)
 
         # Dispatch the request
         status, headers, body = @app.call(env)
