@@ -50,8 +50,15 @@ describe "Kirk's Rack handler" do
   end
 
   it "inflates a deflated body" do
-    post '/', {}, :input => Zlib::Deflate.deflate('Hello world'),
+    post '/', {}, :input => deflate('Hello world'),
                   'HTTP_CONTENT_ENCODING' => 'deflate'
+
+    last_response.should receive_body('Hello world')
+  end
+
+  it "inflates a gzip body" do
+    post '/', {}, :input => gzip('Hello world'),
+                  'HTTP_CONTENT_ENCODING' => 'gzip'
 
     last_response.should receive_body('Hello world')
   end

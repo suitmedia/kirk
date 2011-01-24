@@ -86,8 +86,9 @@ module Kirk
 
         input = request.get_input_stream
 
-        if env['HTTP_CONTENT_ENCODING'] == 'deflate'
-          input = InflaterInputStream.new(input)
+        case env['HTTP_CONTENT_ENCODING']
+        when 'deflate' then input = InflaterInputStream.new(input)
+        when 'gzip'    then input = GZIPInputStream.new(input)
         end
 
         env[RACK_INPUT] = InputStream.new(input)
