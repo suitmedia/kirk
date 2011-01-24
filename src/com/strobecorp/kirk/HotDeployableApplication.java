@@ -8,12 +8,12 @@ import javax.servlet.ServletException;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.Request;
 
-public class Application extends AbstractHandler {
+public class HotDeployableApplication extends AbstractHandler {
 
   private AtomicReference<Deploy> currentDeploy;
   private ApplicationConfig       config;
 
-  public Application(ApplicationConfig config) {
+  public HotDeployableApplication(ApplicationConfig config) {
     super();
 
     this.config        = config;
@@ -47,4 +47,5 @@ public class Application extends AbstractHandler {
   private Deploy loadCurrentDeploy() {
     return new Deploy(config.getApplicationPath(), config.getBootstrapPath());
   }
+
 }

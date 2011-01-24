@@ -19,8 +19,10 @@ module Kirk
 
     def rack(path)
       @current = new_config
-      @current.set_application_path path.to_s
-      yield
+      @current.application_path = path.to_s
+
+      yield if block_given?
+
     ensure
       @configs << @current
       @current = nil
@@ -82,9 +84,9 @@ module Kirk
 
     def new_config
       ApplicationConfig.new.tap do |config|
-        config.listen = '0.0.0.0:9090'
-        config.set_bootstrap_path File.expand_path('../bootstrap.rb', __FILE__)
-        config.set_life_cycle_listener Application::WatcherThread.new
+        config.listen             = '0.0.0.0:9090'
+        config.bootstrap_path     = File.expand_path('../bootstrap.rb', __FILE__)
+        config.lifecycle_listener = Application::WatcherThread.new
       end
     end
   end

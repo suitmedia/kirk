@@ -1,6 +1,6 @@
 module Kirk
   # This class extends a native Java class
-  class Application
+  class Application < Native::HotDeployableApplication
     # Be able to listen to when the application is
     # starting so that the watcher thread can be
     # spawned
