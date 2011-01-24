@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+gem 'kirk', :path => '.'
+
 gem 'activesupport'
 gem 'rake'
 gem 'rspec',        '~> 2.4.0'

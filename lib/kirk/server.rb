@@ -1,8 +1,10 @@
 module Kirk
   class Server
-    def self.build(&blk)
+    def self.build(str = nil, &blk)
       builder = Builder.new
-      builder.instance_eval(&blk)
+
+      str ? builder.instance_eval(str) : builder.instance_eval(&blk)
+
       new(builder.to_handler, builder.to_connectors)
     end
 

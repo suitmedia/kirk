@@ -50,15 +50,6 @@ module Kirk
       end
     end
 
-    def self.build(path, opts = {})
-      config = ApplicationConfig.new
-      config.set_application_path path.to_s
-      config.set_bootstrap_path File.expand_path('../bootstrap.rb', __FILE__)
-      config.set_life_cycle_listener( WatcherThread.new )
-
-      new(config)
-    end
-
     def application_path
       config.application_path
     end

@@ -20,6 +20,8 @@ desc 'Build the Jar'
 task :jar => :compile do
   ant.jar :basedir => "build/kirk/classes", :destfile => "build/kirk/native.jar",
     :includes => "**/*.class"
+
+  cp "build/kirk/native.jar", "lib/kirk/native.jar"
 end
 
 desc 'Clean up build artifacts'
