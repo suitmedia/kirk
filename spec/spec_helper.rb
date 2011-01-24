@@ -3,7 +3,6 @@ require 'kirk'
 require 'fileutils'
 require 'socket'
 require 'zlib'
-require 'popen4'
 require 'rack/test'
 require 'net/http'
 

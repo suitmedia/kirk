@@ -43,6 +43,10 @@ module SpecHelpers
     application_path('bundled_app', *args)
   end
 
+  def kirked_up_path(*args)
+    application_path('kirked_up', *args)
+  end
+
   def tmp(*args)
     root.join('tmp', *args)
   end

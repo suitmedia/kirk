@@ -23,7 +23,7 @@ module Kirk
   private
 
     def config
-      File.read(@options[:config])
+      @options[:config]
     end
 
     def default_options
