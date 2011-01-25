@@ -2,18 +2,57 @@
 $:.unshift File.expand_path('../../lib', __FILE__)
 
 require "kirk"
+require "uri"
 require "fileutils"
+require "net/http"
 
-begin
-  server = Kirk::Server.build File.expand_path("../Kirkfile", __FILE__)
-  server.start
+def redeploy(path)
+  FileUtils.touch File.expand_path("../#{path}/REVISION", __FILE__)
+end
 
-  while true
-    sleep 2
-    FileUtils.touch File.expand_path("../redeploys/REVISION", __FILE__)
+def background(int = 1)
+  t = Thread.new do
+    while true
+      sleep int
+      yield
+    end
+  end
+  t.abort_on_exception = true
+  THREADS << t
+end
+
+THREADS = []
+SERVER  = Kirk::Server.build File.expand_path("../Kirkfile", __FILE__)
+SERVER.start
+
+unless ARGV.include?("--no-redeploys")
+  background 2 do
+    redeploy "redeploys"
+  end
+end
+
+unless ARGV.include?("--no-train-app")
+  # Create widgets
+  background 0.25 do
+    Net::HTTP.new('127.0.0.1', 9091).start do |http|
+      resp = http.request(Net::HTTP::Post.new("/widgets"))
+      puts "[POST - #{resp.code}] #{resp.body}"
+    end
   end
 
-ensure
-  puts "Finishing up..."
-  server.stop
+  # Fetch widgets
+  background 0.05 do
+    Net::HTTP.new('127.0.0.1', 9091).start do |http|
+      resp = http.request(Net::HTTP::Get.new("/widgets"))
+      puts "[GET - #{resp.code}] #{resp.body}"
+    end
+  end
+
+  # Reload
+  background 2 do
+    redeploy "train_app"
+  end
 end
+
+THREADS.each { |t| t.join }
+SERVER.stop

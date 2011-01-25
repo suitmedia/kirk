@@ -1,3 +1,8 @@
 rack "redeploys/config.ru" do
   listen 9090
 end
+
+rack "train_app/config.ru" do
+  listen 9091
+  # env :RAILS_ENV => "production"
+end

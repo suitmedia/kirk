@@ -9,6 +9,7 @@ gem 'rack',         '>= 1.0.0'
 gem 'rack-test',    '~> 0.5.0'
 
 group :stress do
-  gem 'activerecord',              '~> 3.0.0'
-  gem 'activerecord-jdbc-adapter', '~> 1.1.0'
+  gem "rails", "~> 3.0.0"
+  gem 'activerecord-jdbc-adapter'
+  gem "jdbc-mysql", :require => false
 end
