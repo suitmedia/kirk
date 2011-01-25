@@ -29,4 +29,14 @@ task :clean do
   rm_rf 'build'
 end
 
-task :default => :jar
+desc 'Run specs'
+task :spec => :jar do
+  sh "ruby -S rspec spec"
+end
+
+desc 'Package the gem'
+task :gem => :jar do
+  sh "ruby -S gem build kirk.gemspec"
+end
+
+task :default => :spec

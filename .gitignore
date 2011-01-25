@@ -1,3 +1,4 @@
 build
 lib/kirk/native.jar
 Gemfile.lock
+*.gem
