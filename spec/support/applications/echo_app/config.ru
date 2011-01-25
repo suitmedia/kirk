@@ -1,3 +1,5 @@
+use Rack::Lint
+
 run lambda { |env|
   obj = env.dup
 

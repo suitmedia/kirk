@@ -51,16 +51,17 @@ module Kirk
     def handle(target, base_request, request, response)
       begin
         env = DEFAULT_RACK_ENV.merge(
-          REQUEST_URI    => request.getRequestURI,
-          PATH_INFO      => request.get_path_info,
-          REQUEST_METHOD => request.get_method       || "GET",
-          QUERY_STRING   => request.get_query_string || "",
-          SERVER_NAME    => request.get_server_name  || "",
-          REMOTE_HOST    => request.get_remote_host  || "",
-          REMOTE_ADDR    => request.get_remote_addr  || "",
-          REMOTE_USER    => request.get_remote_user  || "",
-          SERVER_PORT    => request.get_server_port.to_s,
-          RACK_VERSION   => ::Rack::VERSION)
+          REQUEST_URI     => request.getRequestURI,
+          PATH_INFO       => request.get_path_info,
+          REQUEST_METHOD  => request.get_method       || "GET",
+          RACK_URL_SCHEME => request.get_scheme       || "http",
+          QUERY_STRING    => request.get_query_string || "",
+          SERVER_NAME     => request.get_server_name  || "",
+          REMOTE_HOST     => request.get_remote_host  || "",
+          REMOTE_ADDR     => request.get_remote_addr  || "",
+          REMOTE_USER     => request.get_remote_user  || "",
+          SERVER_PORT     => request.get_server_port.to_s,
+          RACK_VERSION    => ::Rack::VERSION)
 
         # Process the content length
         if (content_length = request.get_content_length) >= 0
@@ -91,7 +92,8 @@ module Kirk
         when 'gzip'    then input = GZIPInputStream.new(input)
         end
 
-        env[RACK_INPUT] = InputStream.new(input)
+        input = InputStream.new(input)
+        env[RACK_INPUT] = input
 
         # Dispatch the request
         status, headers, body = @app.call(env)
@@ -116,7 +118,7 @@ module Kirk
 
         body.close if body.respond_to?(:close)
       ensure
-        env[RACK_INPUT].close if env[RACK_INPUT]
+        input.recycle if input
         request.set_handled(true)
       end
     end

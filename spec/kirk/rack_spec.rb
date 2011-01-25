@@ -16,6 +16,7 @@ describe "Kirk's Rack handler" do
       'rack.multithread'  => true,
       'rack.multiprocess' => false,
       'rack.run_once'     => false,
+      'rack.url_scheme'   => 'http',
 
       # Request specific
       'REQUEST_URI'       => '/',
@@ -33,7 +34,7 @@ describe "Kirk's Rack handler" do
       'HTTP_ACCEPT'       => "*/*",
       'HTTP_CONNECTION'   => 'close',
 
-      'rack.input'        => nil
+      'rack.input'        => ''
     )
   end
 
