@@ -55,10 +55,13 @@ module Kirk
         app, _ = *args
 
         @apps |= [app]
+
         @info[app] ||= {
           :standby       => LinkedBlockingQueue.new,
           :last_modified => app.last_modified
         }
+
+        warmup_standby_deploy(app)
 
       when :unwatch
 
@@ -89,8 +92,29 @@ module Kirk
     end
 
     def redeploy(app, mtime)
-      app.redeploy
+      if key = app.key
+
+        queue  = @info[app][:standby]
+        deploy = queue.poll
+
+        if deploy && deploy.key == key
+          app.deploy(deploy)
+        else
+          deploy.terminate if deploy
+          app.redeploy
+        end
+
+        warmup_standby_deploy(app)
+      else
+        app.redeploy
+      end
+
       @info[app][:last_modified] = mtime
+    end
+
+    def warmup_standby_deploy(app)
+      queue = @info[app][:standby]
+      background { queue.put(app.build_deploy) }
     end
 
     def cleanup

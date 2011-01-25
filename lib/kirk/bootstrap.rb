@@ -31,10 +31,14 @@ module Kirk
     end
 
     def load_bundle
-      require 'bundler/setup' if File.exist?('Gemfile')
-      if File.exist?('Gemfile.lock')
-        require 'digest/sha1'
-        Digest::SHA1.hexdigest(File.read('Gemfile.lock'))
+      if File.exist?('Gemfile')
+        require 'bundler/setup'
+
+        if File.exist?('Gemfile.lock')
+          require 'digest/sha1'
+          str = File.read('Gemfile') + File.read('Gemfile.lock')
+          Digest::SHA1.hexdigest(str)
+        end
       end
     end
 

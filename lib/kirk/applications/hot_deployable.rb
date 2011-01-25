@@ -12,9 +12,12 @@ module Kirk
       end
 
       def key
-        path = "#{application_path}/Gemfile.lock"
-        if File.exist?(path)
-          Digest::SHA1.hexdigest(File.read(path))
+        gemfile  = "#{application_path}/Gemfile"
+        lockfile = "#{application_path}/Gemfile.lock"
+
+        if File.exist?(gemfile) && File.exist?(lockfile)
+          str = File.read(gemfile) + File.read(lockfile)
+          Digest::SHA1.hexdigest(str)
         end
       end
 
@@ -36,7 +39,12 @@ module Kirk
       end
 
       def redeploy
-        deploy(build_deploy.tap { |d| d.prepare })
+        deploy(build_deploy)
+      end
+
+      def deploy(d)
+        d.prepare
+        super
       end
     end
   end
