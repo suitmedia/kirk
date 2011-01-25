@@ -144,4 +144,24 @@ describe 'Kirk::Server' do
     get '/'
     last_response.body.should_not == num
   end
+
+  it "can load config files relative to the current file" do
+    kirkup kirked_up_path("Kirkfile")
+
+    get '/'
+    last_response.should have_body('Hello World')
+
+    host! 'localhost', 9091
+
+    get '/'
+    last_response.should have_body('Goodbye World')
+  end
+
+  it "provides a friendly error when the file being loaded doesn't exist" do
+    lambda do
+      start do
+        load "zomgHI2U"
+      end
+    end.should raise_error(Kirk::MissingConfigFile)
+  end
 end

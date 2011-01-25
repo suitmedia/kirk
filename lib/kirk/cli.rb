@@ -18,6 +18,8 @@ module Kirk
       server = Kirk::Server.build(config)
       server.start
       server.join
+    rescue Exception => e
+      abort "[ERROR] #{e.message}"
     end
 
   private
@@ -45,17 +47,6 @@ module Kirk
 
     def parse!
       parser.parse! @argv
-      validate!
-    end
-
-    def validate!
-      unless File.exist?(@options[:config])
-        error "`#{@options[:config]}` does not exist"
-      end
-    end
-
-    def error(str)
-      abort "[ERROR] #{str}"
     end
   end
 end

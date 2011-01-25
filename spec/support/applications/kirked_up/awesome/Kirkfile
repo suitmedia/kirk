@@ -1,0 +1,3 @@
+rack File.expand_path('../../../goodbye_world', __FILE__) do
+  listen 9091
+end

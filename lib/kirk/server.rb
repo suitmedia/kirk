@@ -1,7 +1,12 @@
 module Kirk
   class Server
     def self.build(file = nil, &blk)
-      builder = Builder.new
+      root    = File.dirname(file) if file
+      builder = Builder.new(root)
+
+      if file && !File.exist?(file)
+        raise MissingConfigFile, "config file `#{file}` does not exist"
+      end
 
       file ? builder.instance_eval(File.read(file), file) :
              builder.instance_eval(&blk)

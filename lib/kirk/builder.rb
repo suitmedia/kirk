@@ -1,14 +1,29 @@
 module Kirk
+  class MissingConfigFile < RuntimeError ; end
+
   class Builder
 
     VALID_LOG_LEVELS = %w(severe warning info config fine finer finest all)
 
     attr_reader :options
 
-    def initialize
+    def initialize(root = nil)
+      @root    = root || Dir.pwd
       @current = nil
       @configs = []
       @options = {}
+    end
+
+    def load(path)
+      path = File.expand_path(path, @root)
+
+      with_root File.dirname(path) do
+        unless File.exist?(path)
+          raise MissingConfigFile, "config file `#{path}` does not exist"
+        end
+
+        instance_eval(File.read(path), path)
+      end
     end
 
     def log(opts = {})
@@ -81,6 +96,13 @@ module Kirk
     end
 
   private
+
+    def with_root(root)
+      old, @root = @root, root
+      yield
+    ensure
+      @root = old
+    end
 
     def new_config
       Applications::Config.new.tap do |config|

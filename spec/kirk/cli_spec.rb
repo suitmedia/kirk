@@ -14,7 +14,7 @@ describe "Kirk CLI interface" do
 
   it "exits with an error if the config file does not exist" do
     kirk do
-      stderr.read.chomp.should == "[ERROR] `/Users/carllerche/Developer/Source/kirk/Kirkfile` does not exist"
+      stderr.read.chomp.should == "[ERROR] config file `/Users/carllerche/Developer/Source/kirk/Kirkfile` does not exist"
     end
 
     exit_status.should == 1
