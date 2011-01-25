@@ -31,7 +31,11 @@ public class HotDeployableApplication extends AbstractHandler {
   }
 
   public void redeploy() {
-    this.currentDeploy.set(loadCurrentDeploy());
+    Deploy previewDeploy = this.currentDeploy.getAndSet(loadCurrentDeploy());
+
+    if ( previewDeploy != null ) {
+      previewDeploy.terminate();
+    }
   }
 
   private Deploy getCurrentDeploy() {
