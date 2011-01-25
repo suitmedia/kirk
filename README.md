@@ -15,7 +15,7 @@ Here is a brief highlight of some of the features available.
 
 * 0 Downtime deploys: Deploy new versions of your rack application without
   losing a single request. The basic strategy is similar to Passenger.
-  Basically, touch a magic file in the application root and Kirk will reload the
+  Touch a magic file in the application root and Kirk will reload the
   application without dropping a single request... It's just magic.
 
 * Request body streaming: Have a large request body to handle? Why wait until
