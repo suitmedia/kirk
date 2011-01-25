@@ -2,6 +2,7 @@ require 'java'
 
 module Kirk
   class InputStream
+    READL_SIZE  = 1_024
     CHUNK_SIZE  = 8_192
     BUFFER_SIZE = 1_024 * 50
 
@@ -40,6 +41,35 @@ module Kirk
       end
 
       one_loop && buffer
+    end
+
+    def gets(sep = $/)
+      return read unless sep
+
+      sep    = "#{$/}#{$/}" if sep == ""
+      buffer = ''
+      curpos = pos
+      offset = 0
+
+      while read(READL_SIZE, buffer)
+        if i = buffer.index(sep, 0)
+          i += sep.bytesize
+          buffer.slice!(i..-1)
+          seek(curpos + buffer.bytesize)
+          break
+        end
+        offset = buffer.bytesize
+      end
+
+      buffer
+    end
+
+    def each
+      while chunk = read(CHUNK_SIZE)
+        yield chunk
+      end
+
+      self
     end
 
     def pos

@@ -155,4 +155,51 @@ describe 'Kirk::InputStream' do
       input.read(4_096).should == GIBBERISH[0, 4_096]
     end
   end
+
+  describe "#gets" do
+    it "reads until the next NL" do
+      with_input_stream do |input, writer|
+        lines = ["one two three four\n", "five six seven eight\n", " nine ten 11"]
+
+        writer << lines.join
+        writer.close
+
+        lines.each do |line|
+          input.gets.should == line
+        end
+
+        input.gets.should == ""
+      end
+    end
+
+    it "can specify the terminator" do
+      with_input_stream do |input, writer|
+        lines = ["one two three four|", "five fix seven eight|", " nine ten 11"]
+
+        writer << lines.join
+        writer.close
+
+        lines.each do |line|
+          input.gets('|').should == line
+        end
+
+        input.gets('|').should == ""
+      end
+    end
+  end
+
+  describe "#each" do
+    it "iterates over the entire stream and returns self" do
+      with_input_stream do |input, writer|
+        stream_in_bg writer, GIBBERISH
+
+        buf = ""
+        input.each do |chunk|
+          buf << chunk
+        end
+
+        buf.should == GIBBERISH
+      end
+    end
+  end
 end
