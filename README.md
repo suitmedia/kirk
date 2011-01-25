@@ -4,6 +4,11 @@ Kirk is a wrapper around Jetty that hides all of the insanity and wraps your
 Rack application in a loving embrace. Also, Kirk is probably the least HTTP
 retarded ruby rack server out there.
 
+### TL;DR
+
+    gem install kirk
+    rackup -s Kirk config.ru
+
 ### Features
 
 Here is a brief highlight of some of the features available.
@@ -29,10 +34,47 @@ Here is a brief highlight of some of the features available.
 
 ### Getting Started
 
-The TL;DR way:
+To take advantage of the zero downtime redeploy features, you will need to
+create a configuration file that describes to Kirk how to start and watch the
+rack application. You can create the file anywhere. For example, let's say that
+we are going to put the following configuration file at `/path/to/Kirkfile`.
 
-    gem install kirk
-    rackup -s Kirk config.ru
+    # Set the log level to ALL.
+    log :level => :all
+
+    rack "/path/to/my/rackup/config.ru" do
+      # Set the host and / or port that this rack application will
+      # be available on. This defaults to "0.0.0.0:9090"
+      listen 80
+
+      # Set the host names that this rack application wll be available
+      # on. This defaults to "*"
+      hosts   "example.com", "*.example.org"
+
+      # Set the file that controls the redeploys. This is relative to
+      # the applications root (the directory that the rackup file lives
+      # in). Touch this file to redepoy the application.
+      watch "REVISION"
+    end
+
+    rack "/path/to/another/rackup/config.ru" do
+      # More settings here
+    end
+
+Once you have Kirk configured, start it up with the following command:
+
+    kirk -c /path/to/Kirkfile
+
+... and you're off.
+
+### Daemonizing Kirk
+
+Use your OS features. For example, write an upstart script or use
+`start-stop-daemon`.
+
+### Logging to a file or syslog
+
+Kirk just dumps logs to stdout, so just pipe Kirk to `logger`.
 
 ### Caveats
 
