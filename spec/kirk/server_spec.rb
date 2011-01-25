@@ -1,6 +1,13 @@
 require 'spec_helper'
 
 describe 'Kirk::Server' do
+  it "runs a simple rack application" do
+    start lambda { |env| [ 200, { 'Content-Type' => "text/plain" }, [ "Hello Rack" ] ] }
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body("Hello Rack")
+  end
   it "runs the server" do
     start hello_world_path
 

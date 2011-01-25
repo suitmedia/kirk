@@ -1,17 +1,25 @@
 module SpecHelpers
-  def start(path = nil, &blk)
+  def start(app = nil, &blk)
     @server.stop if @server
 
-    blk ||= lambda do
-      log :level => :warning
+    if app.respond_to?(:call)
 
-      rack path do
-        listen  "0.0.0.0:9090"
-        watch   "REVISION"
+      @server = Kirk::Server.start(app, :log_level => :warning)
+
+    else
+
+      blk ||= lambda do
+        log :level => :warning
+
+        rack app do
+          listen  "0.0.0.0:9090"
+          watch   "REVISION"
+        end
       end
-    end
 
-    @server = Kirk::Server.build(&blk)
-    @server.start
+      @server = Kirk::Server.build(&blk)
+      @server.start
+
+    end
   end
 end

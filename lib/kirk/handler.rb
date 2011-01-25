@@ -36,7 +36,6 @@ module Kirk
       SERVER_SOFTWARE => SERVER,
 
       # Rack stuff
-      RACK_VERSION      => Rack::VERSION,
       RACK_ERRORS       => STDERR,
       RACK_MULTITHREAD  => true,
       RACK_MULTIPROCESS => false,
@@ -45,8 +44,8 @@ module Kirk
 
     CONTENT_LENGTH_TYPE_REGEXP = /^Content-(?:Type|Length)$/i
 
-    def initialize
-      @app, @opts = Rack::Builder.parse_file('config.ru')
+    def initialize(app)
+      @app = app
     end
 
     def handle(target, base_request, request, response)
@@ -60,7 +59,8 @@ module Kirk
           REMOTE_HOST    => request.get_remote_host  || "",
           REMOTE_ADDR    => request.get_remote_addr  || "",
           REMOTE_USER    => request.get_remote_user  || "",
-          SERVER_PORT    => request.get_server_port.to_s)
+          SERVER_PORT    => request.get_server_port.to_s,
+          RACK_VERSION   => ::Rack::VERSION)
 
         # Process the content length
         if (content_length = request.get_content_length) >= 0

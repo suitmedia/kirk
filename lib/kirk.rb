@@ -16,11 +16,14 @@ module Kirk
   end
 
   module Applications
-    require 'kirk/applications/config'
-    require 'kirk/applications/hot_deployable'
+    autoload :Config,         'kirk/applications/config'
+    autoload :HotDeployable,  'kirk/applications/hot_deployable'
+    autoload :Rack,           'kirk/applications/rack'
   end
 
   require 'kirk/builder'
+  require 'kirk/handler'
+  require 'kirk/input_stream'
   require 'kirk/server'
 
   # Configure the logger

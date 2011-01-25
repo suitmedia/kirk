@@ -6,19 +6,37 @@ module Kirk
       file ? builder.instance_eval(File.read(file), file) :
              builder.instance_eval(&blk)
 
-      new(builder.to_handler, builder.to_connectors, builder.options)
+      options              = builder.options
+      options[:connectors] = builder.to_connectors
+
+      new(builder.to_handler, options)
     end
 
-    def initialize(handler, connectors, options)
-      @handler, @connectors, @options = handler, connectors, options
+    def self.start(handler, options = {})
+      new(handler, options).tap do |server|
+        server.start
+      end
+    end
+
+    def initialize(handler, options = {})
+      if Jetty::AbstractHandler === handler
+        @handler = handler
+      elsif handler.respond_to?(:call)
+        @handler = Applications::Rack.new(handler)
+      else
+        raise "#{handler.inspect} is not a valid Rack application"
+      end
+
+      @options = options
     end
 
     def start
       @server = Jetty::Server.new.tap do |server|
-        @connectors.each do |conn|
+        connectors.each do |conn|
           server.add_connector(conn)
-          server.set_handler(@handler)
         end
+
+        server.set_handler(@handler)
       end
 
       configure!
@@ -40,10 +58,19 @@ module Kirk
       Kirk.logger.set_level log_level
     end
 
-    %w(severe warning info config fine finer finest all)
+    def connectors
+      @options[:connectors] ||=
+        [ Jetty::SelectChannelConnector.new.tap do |conn|
+          host = @options[:host] || '0.0.0.0'
+          port = @options[:port] || 9090
+
+          conn.set_host(host)
+          conn.set_port(port.to_i)
+        end ]
+    end
 
     def log_level
-      case @options[:log_level] || "info"
+      case (@options[:log_level] || "info").to_s
       when "severe"   then Level::SEVERE
       when "warning"  then Level::WARNING
       when "info"     then Level::INFO
@@ -52,6 +79,7 @@ module Kirk
       when "finer"    then Level::FINER
       when "finest"   then Level::FINEST
       when "all"      then Level::ALL
+      else Level::INFO
       end
     end
   end

@@ -16,7 +16,9 @@ module Kirk
       load_rack
       load_kirk
 
-      Kirk::Handler.new
+      app, options = Rack::Builder.parse_file('config.ru')
+
+      Kirk::Handler.new(app)
     end
 
   private
@@ -34,6 +36,7 @@ module Kirk
     end
 
     def load_rack
+      gem "rack", ">= 1.0.0"
       require 'rack'
     end
 
