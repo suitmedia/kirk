@@ -9,7 +9,7 @@ describe 'Kirk::Server' do
     last_response.should have_body("Hello Rack")
   end
   it "runs the server" do
-    start hello_world_path
+    start hello_world_path('config.ru')
 
     get '/'
     last_response.should be_successful
@@ -17,7 +17,7 @@ describe 'Kirk::Server' do
   end
 
   it "runs the server on the specified port" do
-    path = hello_world_path
+    path = hello_world_path('config.ru')
 
     start do
       log :level => :warning
@@ -35,8 +35,8 @@ describe 'Kirk::Server' do
   end
 
   it "can start multiple applications" do
-    path1 = hello_world_path
-    path2 = goodbye_world_path
+    path1 = hello_world_path('config.ru')
+    path2 = goodbye_world_path('config.ru')
 
     start do
       log :level => :warning
@@ -61,8 +61,8 @@ describe 'Kirk::Server' do
   end
 
   it "can start multiple applications on the same port" do
-    path1 = hello_world_path
-    path2 = goodbye_world_path
+    path1 = hello_world_path('config.ru')
+    path2 = goodbye_world_path('config.ru')
 
     start do
       log :level => :warning
@@ -82,8 +82,8 @@ describe 'Kirk::Server' do
   end
 
   it "can partition applications by the host name" do
-    path1 = hello_world_path
-    path2 = goodbye_world_path
+    path1 = hello_world_path('config.ru')
+    path2 = goodbye_world_path('config.ru')
 
     start do
       log :level => :warning
@@ -111,7 +111,7 @@ describe 'Kirk::Server' do
   end
 
   it "doesn't require 'bundler/setup' if there is no Gemfile" do
-    start require_as_app_path
+    start require_as_app_path('config.ru')
 
     get '/'
     last_response.should be_successful
@@ -119,7 +119,7 @@ describe 'Kirk::Server' do
   end
 
   it "requires 'bundler/setup' if there is a Gemfile" do
-    start bundled_app_path
+    start bundled_app_path('config.ru')
 
     get '/'
     last_response.should be_successful
@@ -128,7 +128,7 @@ describe 'Kirk::Server' do
   end
 
   it "reloads the server" do
-    start randomized_app_path
+    start randomized_app_path('config.ru')
 
     get '/'
     num = last_response.body
@@ -155,6 +155,14 @@ describe 'Kirk::Server' do
 
     get '/'
     last_response.should have_body('Goodbye World')
+  end
+
+  it "can rackup applications that don't use config.ru as the rackup file" do
+    start blacksheep_path('not_config.ru')
+
+    get '/'
+    last_response.should be_successful
+    last_response.should have_body("Black Sheep")
   end
 
   it "provides a friendly error when the file being loaded doesn't exist" do

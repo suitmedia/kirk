@@ -6,6 +6,7 @@ module Kirk
       attr_accessor :hosts,
                     :listen,
                     :watch,
+                    :rackup,
                     :application_path,
                     :bootstrap_path
 
@@ -14,8 +15,13 @@ module Kirk
         @listen = listen
       end
 
+      def application_path
+        @application_path || File.dirname(rackup)
+      end
+
       # Handle the java interface
       alias getApplicationPath    application_path
+      alias getRackupPath         rackup
       alias getBootstrapPath      bootstrap_path
     end
   end

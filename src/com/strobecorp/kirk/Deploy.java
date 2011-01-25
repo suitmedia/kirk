@@ -15,12 +15,13 @@ public class Deploy {
   private ScriptingContainer context;
   private Object             handler;
 
-  public Deploy(String applicationPath, String bootstrapPath) {
+  public Deploy(ApplicationConfig config) {
     ScriptingContainer context = new ScriptingContainer(LocalContextScope.THREADSAFE);
-    Object bootstrapper = context.runScriptlet(PathType.ABSOLUTE, bootstrapPath);
+    Object bootstrapper = context.runScriptlet(PathType.ABSOLUTE, config.getBootstrapPath());
 
     this.context = context;
-    this.handler = context.callMethod(bootstrapper, "run", applicationPath);
+    this.handler = context.callMethod(bootstrapper, "run",
+      config.getApplicationPath(), config.getRackupPath());
   }
 
   public void handle(String target, Request baseRequest,

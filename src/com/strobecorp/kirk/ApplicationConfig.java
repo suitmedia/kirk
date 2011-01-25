@@ -5,6 +5,7 @@ import org.eclipse.jetty.util.component.LifeCycle;
 public interface ApplicationConfig {
 
   public String             getApplicationPath();
+  public String             getRackupPath();
   public String             getBootstrapPath();
   public LifeCycle.Listener getLifeCycleListener();
 

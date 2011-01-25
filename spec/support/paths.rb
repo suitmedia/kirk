@@ -43,6 +43,10 @@ module SpecHelpers
     application_path('bundled_app', *args)
   end
 
+  def blacksheep_path(*args)
+    application_path('blacksheep', *args)
+  end
+
   def kirked_up_path(*args)
     application_path('kirked_up', *args)
   end

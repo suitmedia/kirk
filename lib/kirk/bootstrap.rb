@@ -5,7 +5,7 @@ module Kirk
   import 'java.util.zip.InflaterInputStream'
 
   class Bootstrap
-    def run(application_path)
+    def run(application_path, rackup)
       Dir.chdir File.expand_path(application_path)
 
       load_rubygems
@@ -16,7 +16,7 @@ module Kirk
       load_rack
       load_kirk
 
-      app, options = Rack::Builder.parse_file('config.ru')
+      app, options = Rack::Builder.parse_file(rackup)
 
       Kirk::Handler.new(app)
     end

@@ -1,4 +1,4 @@
-rack File.expand_path('../../hello_world', __FILE__) do
+rack "../hello_world/config.ru" do
   listen 9090
 end
 

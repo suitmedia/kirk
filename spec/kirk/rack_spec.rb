@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Kirk's Rack handler" do
   before :each do
-    start echo_app_path
+    start echo_app_path('config.ru')
   end
 
   it "passes the correct rack env to the rack app" do

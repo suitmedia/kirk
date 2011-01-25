@@ -1,5 +1,6 @@
 module Kirk
   class MissingConfigFile < RuntimeError ; end
+  class MissingRackupFile < RuntimeError ; end
 
   class Builder
 
@@ -15,7 +16,7 @@ module Kirk
     end
 
     def load(path)
-      path = File.expand_path(path, @root)
+      path = expand_path(path)
 
       with_root File.dirname(path) do
         unless File.exist?(path)
@@ -32,9 +33,15 @@ module Kirk
       @options[:log_level] = level.to_s
     end
 
-    def rack(path)
+    def rack(rackup)
+      rackup = expand_path(rackup)
+
+      unless File.exist?(rackup)
+        raise MissingRackupFile, "rackup file `#{rackup}` does not exist"
+      end
+
       @current = new_config
-      @current.application_path = path.to_s
+      @current.rackup = rackup
 
       yield if block_given?
 
@@ -102,6 +109,10 @@ module Kirk
       yield
     ensure
       @root = old
+    end
+
+    def expand_path(path)
+      File.expand_path(path, @root)
     end
 
     def new_config

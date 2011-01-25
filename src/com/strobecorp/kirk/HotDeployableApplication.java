@@ -43,7 +43,7 @@ public class HotDeployableApplication extends AbstractHandler {
   }
 
   private Deploy loadCurrentDeploy() {
-    return new Deploy(config.getApplicationPath(), config.getBootstrapPath());
+    return new Deploy(config);
   }
 
 }
