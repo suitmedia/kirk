@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path('../../lib', __FILE__)
+
+require "kirk"
+require "fileutils"
+
+begin
+  server = Kirk::Server.build File.expand_path("../Kirkfile", __FILE__)
+  server.start
+
+  while true
+    sleep 2
+    FileUtils.touch File.expand_path("../redeploys/REVISION", __FILE__)
+  end
+
+ensure
+  puts "Finishing up..."
+  server.stop
+end

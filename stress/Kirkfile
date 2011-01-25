@@ -1,0 +1,3 @@
+rack "redeploys/config.ru" do
+  listen 9090
+end
