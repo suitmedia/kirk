@@ -62,7 +62,7 @@ module Kirk
       @current.listen = listen
     end
 
-    def watch(watch)
+    def watch(*watch)
       @current.watch = watch
     end
 
@@ -118,6 +118,7 @@ module Kirk
     def new_config
       Applications::Config.new.tap do |config|
         config.listen         = '0.0.0.0:9090'
+        config.watch          = [ 'REVISION' ]
         config.bootstrap_path = File.expand_path('../bootstrap.rb', __FILE__)
       end
     end

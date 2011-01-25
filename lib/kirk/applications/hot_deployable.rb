@@ -65,11 +65,12 @@ module Kirk
       end
 
       def last_modified
-        path = "#{application_path}/REVISION"
+        mtimes = config.watch.map do |path|
+          path = File.expand_path(path, application_path)
+          File.exist?(path) ? File.mtime(path).to_i : 0
+        end
 
-        return 0 unless File.exist?(path)
-
-        File.mtime(path).to_i
+        mtimes.max
       end
     end
   end

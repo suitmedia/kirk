@@ -18,10 +18,7 @@ module SpecHelpers
       blk ||= lambda do
         log :level => :warning
 
-        rack app do
-          listen  "0.0.0.0:9090"
-          watch   "REVISION"
-        end
+        rack app
       end
 
       @server = Kirk::Server.build(&blk)

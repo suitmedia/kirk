@@ -145,6 +145,27 @@ describe 'Kirk::Server' do
     last_response.body.should_not == num
   end
 
+  it "can watch a specified file to trigger redeploys" do
+    path = randomized_app_path('config.ru')
+
+    start do
+      log :level => :warning
+
+      rack "#{path}" do
+        watch "redeploy.txt"
+      end
+    end
+
+    get '/'
+    num = last_response.body
+
+    touch randomized_app_path('redeploy.txt')
+    sleep 2
+
+    get '/'
+    last_response.body.should_not == num
+  end
+
   it "can load config files relative to the current file" do
     kirkup kirked_up_path("Kirkfile")
 
