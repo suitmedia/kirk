@@ -12,16 +12,20 @@ import org.jruby.runtime.builtin.IRubyObject;
 
 public class Deploy {
 
+  private ApplicationConfig  config;
   private ScriptingContainer context;
+  private Object             bootstrapper;
   private Object             handler;
+  private String             key;
 
   public Deploy(ApplicationConfig config) {
-    ScriptingContainer context = new ScriptingContainer(LocalContextScope.THREADSAFE);
-    Object bootstrapper = context.runScriptlet(PathType.ABSOLUTE, config.getBootstrapPath());
+    this.config = config;
+    initializeScriptingContext();
+  }
 
-    this.context = context;
+  public void prepare() {
     this.handler = context.callMethod(bootstrapper, "run",
-      config.getApplicationPath(), config.getRackupPath());
+      config.getRackupPath());
   }
 
   public void handle(String target, Request baseRequest,
@@ -30,10 +34,23 @@ public class Deploy {
     context.callMethod(handler, "handle", target, baseRequest, request, response);
   }
 
+  public String getKey() {
+    return key;
+  }
+
   public void terminate() {
     this.context.terminate();
     this.context = null;
     this.handler = null;
+  }
+
+  private void initializeScriptingContext() {
+    this.context = new ScriptingContainer(LocalContextScope.THREADSAFE);
+    this.bootstrapper = context.runScriptlet(
+      PathType.ABSOLUTE, config.getBootstrapPath());
+
+    key = (String) context.callMethod(bootstrapper, "warmup",
+      config.getApplicationPath());
   }
 
 }

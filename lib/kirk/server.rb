@@ -54,6 +54,7 @@ module Kirk
     end
 
     def stop
+      watcher.stop if watcher
       @server.stop
     end
 
@@ -72,6 +73,10 @@ module Kirk
           conn.set_host(host)
           conn.set_port(port.to_i)
         end ]
+    end
+
+    def watcher
+      @options[:watcher]
     end
 
     def log_level

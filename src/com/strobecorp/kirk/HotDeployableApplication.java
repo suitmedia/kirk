@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.Request;
 
-public class HotDeployableApplication extends AbstractHandler {
+public abstract class HotDeployableApplication extends AbstractHandler {
 
   private AtomicReference<Deploy> currentDeploy;
   private ApplicationConfig       config;
@@ -30,20 +30,20 @@ public class HotDeployableApplication extends AbstractHandler {
     return config;
   }
 
-  public void redeploy() {
-    Deploy previewDeploy = this.currentDeploy.getAndSet(loadCurrentDeploy());
+  public void deploy(Deploy deploy) {
+    Deploy previousDeploy = this.currentDeploy.getAndSet(deploy);
 
-    if ( previewDeploy != null ) {
-      previewDeploy.terminate();
+    if ( previousDeploy != null ) {
+      previousDeploy.terminate();
     }
+  }
+
+  private Deploy buildDeploy() {
+    return new Deploy(config);
   }
 
   private Deploy getCurrentDeploy() {
     return currentDeploy.get();
-  }
-
-  private Deploy loadCurrentDeploy() {
-    return new Deploy(config);
   }
 
 }

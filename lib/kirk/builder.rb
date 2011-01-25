@@ -12,7 +12,7 @@ module Kirk
       @root    = root || Dir.pwd
       @current = nil
       @configs = []
-      @options = {}
+      @options = { :watcher => Applications::DeployWatcher.new }
     end
 
     def load(path)
@@ -74,8 +74,11 @@ module Kirk
             ctx.set_virtual_hosts(c.hosts)
           end
 
+          application = Applications::HotDeployable.new(c)
+          application.add_watcher(watcher)
+
           ctx.set_connector_names [c.listen]
-          ctx.set_handler Applications::HotDeployable.new(c)
+          ctx.set_handler application
         end
       end
 
@@ -103,6 +106,10 @@ module Kirk
     end
 
   private
+
+    def watcher
+      @options[:watcher]
+    end
 
     def with_root(root)
       old, @root = @root, root

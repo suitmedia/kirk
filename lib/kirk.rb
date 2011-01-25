@@ -12,6 +12,8 @@ module Kirk
   require 'kirk/jetty'
   require 'kirk/version'
 
+  import "java.util.concurrent.LinkedBlockingQueue"
+  import "java.util.concurrent.TimeUnit"
   import "java.util.logging.Logger"
   import "java.util.logging.Level"
   import "java.util.logging.ConsoleHandler"
@@ -24,6 +26,7 @@ module Kirk
 
   module Applications
     autoload :Config,         'kirk/applications/config'
+    autoload :DeployWatcher,  'kirk/applications/deploy_watcher'
     autoload :HotDeployable,  'kirk/applications/hot_deployable'
     autoload :Rack,           'kirk/applications/rack'
   end
