@@ -10,7 +10,7 @@ describe "Kirk's Rack handler" do
 
     last_response.should have_env(
       # Default env
-      'SERVER_SOFTWARE'   => 'kirk 0.0.1',
+      'SERVER_SOFTWARE'   => "kirk #{Kirk::VERSION}",
       'rack.version'      => Rack::VERSION,
       'rack.errors'       => true,
       'rack.multithread'  => true,

@@ -1,6 +1,13 @@
 module Kirk
-  require 'java'
+  # Make sure that the version of JRuby is new enough
+  unless (JRUBY_VERSION.split('.')[0..2].map(&:to_i) <=> [1, 6, 0]) >= 0
+    raise "Kirk requires JRuby 1.6.0 RC 1 or greater. This is due to "   \
+          "a bug that was fixed in the 1.6 line but not backported to "  \
+          "older versions of JRuby. If you want to use Kirk with older " \
+          "versions of JRuby, bug headius."
+  end
 
+  require 'java'
   require 'kirk/native'
   require 'kirk/jetty'
   require 'kirk/version'
