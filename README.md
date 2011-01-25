@@ -29,12 +29,23 @@ Here is a brief highlight of some of the features available.
 
 ### Getting Started
 
-(WIP)
+The TL;DR way:
+
+    gem install kirk
+    rackup -s Kirk config.ru
 
 ### Caveats
 
 This is still a pretty new project and a lot of settings that should be
 abstracted are still hardcoded in the source.
+
+* Kirk requires JRuby 1.6.0 RC 1 or greater. This is due to a JRuby bug that
+  was fixed in the 1.6 branch but never backported to older versions of JRuby.
+  Crazy stuff happens without the bug fix.
+
+* There is a memory leak if you are reloading an application that uses any of
+  the JDBC gems. This should be fixed on JRuby master but not the JRuby 1.6.0
+  RC 1 release.
 
 ### Getting Help
 
