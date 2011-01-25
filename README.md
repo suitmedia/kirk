@@ -49,7 +49,7 @@ we are going to put the following configuration file at `/path/to/Kirkfile`.
 
       # Set the host names that this rack application wll be available
       # on. This defaults to "*"
-      hosts   "example.com", "*.example.org"
+      hosts "example.com", "*.example.org"
 
       # Set the file that controls the redeploys. This is relative to
       # the applications root (the directory that the rackup file lives
