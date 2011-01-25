@@ -92,3 +92,7 @@ abstracted are still hardcoded in the source.
 ### Getting Help
 
 Ping me (carllerche) on Freenode in #carlhuda
+
+### Reporting Bugs
+
+Just post them to the Github repository's issue tracker.
