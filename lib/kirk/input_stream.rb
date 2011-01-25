@@ -29,6 +29,7 @@ module Kirk
 
     def read(size = nil, buffer = '')
       one_loop = nil
+      read_all = size.nil?
 
       loop do
         limit = size && size < CHUNK_SIZE ? size : CHUNK_SIZE
@@ -39,6 +40,8 @@ module Kirk
 
         break if size && ( size -= len ) <= 0
       end
+
+      return "" if read_all && !one_loop
 
       one_loop && buffer
     end
@@ -86,7 +89,12 @@ module Kirk
     end
 
     def close
+      nil
+    end
+
+    def recycle
       BUFFER_POOL.put(@buffer)
+      @buffer = nil
       nil
     end
 

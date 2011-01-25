@@ -46,12 +46,21 @@ describe 'Kirk::InputStream' do
     end
   end
 
-  it "returns nil when calling #read after reaching EOF" do
+  it "returns nil when calling #read after reaching EOF and passing an integer as the size" do
     with_input_stream do |input, writer|
       writer << "zomgzomg"
       writer.close
       input.read
-      input.read.should be_nil
+      input.read(1).should be_nil
+    end
+  end
+
+  it "returns an empty string when calling #read after reaching EOF and passing nil as arg" do
+    with_input_stream do |input, writer|
+      writer << "zomgzomg"
+      writer.close
+      input.read
+      input.read.should == ""
     end
   end
 
@@ -91,7 +100,7 @@ describe 'Kirk::InputStream' do
       input.read.should == "zomgzomg"
       input.rewind
       input.read.should == "zomgzomg"
-      input.read.should be_nil
+      input.read(1).should be_nil
     end
   end
 
