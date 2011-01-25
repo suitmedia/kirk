@@ -89,6 +89,8 @@ abstracted are still hardcoded in the source.
   the JDBC gems. This should be fixed on JRuby master but not the JRuby 1.6.0
   RC 1 release.
 
+  UPDATE: There still seems to be a leak on master.
+
 ### Getting Help
 
 Ping me (carllerche) on Freenode in #carlhuda
