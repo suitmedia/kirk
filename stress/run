@@ -36,7 +36,10 @@ unless ARGV.include?("--no-train-app")
   background 0.25 do
     Net::HTTP.new('127.0.0.1', 9091).start do |http|
       resp = http.request(Net::HTTP::Post.new("/widgets"))
-      puts "[POST - #{resp.code}] #{resp.body}"
+
+      if resp.code.to_i != 200
+        puts "[POST - #{resp.code}] #{resp.body}"
+      end
     end
   end
 
@@ -44,7 +47,10 @@ unless ARGV.include?("--no-train-app")
   background 0.05 do
     Net::HTTP.new('127.0.0.1', 9091).start do |http|
       resp = http.request(Net::HTTP::Get.new("/widgets"))
-      puts "[GET - #{resp.code}] #{resp.body}"
+
+      if resp.code.to_i != 200
+        puts "[GET - #{resp.code}] #{resp.body}"
+      end
     end
   end
 
